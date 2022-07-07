@@ -22,7 +22,7 @@ pub fn run_encode(input: MD5HashCashInput) -> MD5HashCashOutput {
     }
 
 }
-fn check_seed(hash_code: String, complexity: u32) -> bool {
+pub fn check_seed(hash_code: String, complexity: u32) -> bool {
     let mut comp = 0;
     let bin  = convert_to_binary_from_hex(&*hash_code);
     for c in bin.chars(){
@@ -37,29 +37,22 @@ fn check_seed(hash_code: String, complexity: u32) -> bool {
     result
 }
 
-fn to_seed_value(number: u64) -> String {
+pub fn to_seed_value(number: u64) -> String {
     let complexity_bin = decimal_to_binary(number);
     let str = String::from(complexity_bin.to_string());
     String::from(binary_to_hex(str, 8).to_string()).to_uppercase()
 }
 
 
-fn get_hash_code(seed: String, message: &String) -> String {
+pub fn get_hash_code(seed: String, message: &String) -> String {
     let mut seed_value = seed.to_owned();
     let message_value = message.to_owned();
     seed_value.push_str(&message_value);
     let digest = md5::compute(seed_value);
-    format!("{:?}", digest)
+    format!("{:?}", digest).to_uppercase()
 }
 
-fn hex_to_decimal(val: String) -> u64  {
-    let z = u64::from_str_radix(&*val, 16).expect("Not a binary hex!");
-    z
-}
-
-
-
-fn decimal_to_binary(mut decimal: u64) -> u64 {
+pub fn decimal_to_binary(mut decimal: u64) -> u64 {
     if decimal == 0 {
         decimal
     } else {
@@ -83,12 +76,12 @@ fn decimal_to_binary(mut decimal: u64) -> u64 {
     }
 }
 
-fn binary_to_hex(val: String, len: usize) -> String {
+pub fn binary_to_hex(val: String, len: usize) -> String {
     let n: u64 = u64::from_str_radix(&*val, 2).unwrap();
     format!("{:01$x}", n, len * 2)
 }
 
-fn convert_to_binary_from_hex(hex: &str) -> String {
+pub fn convert_to_binary_from_hex(hex: &str) -> String {
     hex[0..].chars().map(to_binary).collect()
 }
 

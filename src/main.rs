@@ -1,5 +1,6 @@
 mod features;
 mod models;
+mod tests;
 
 use md5;
 use crate::features::{run_encode};
