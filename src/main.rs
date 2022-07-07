@@ -1,3 +1,4 @@
+use std::ptr::hash;
 use std::u64;
 use md5;
 
@@ -6,7 +7,7 @@ fn main() {
     println!("Application started");
 
     let input = MD5HashCashInput {
-        complexity: 9,
+        complexity: 20,
         message: String::from("hello"),
     };
     println!("{}", encode(input));
@@ -16,15 +17,31 @@ fn main() {
 fn encode(input: MD5HashCashInput) -> String {
     let complexity = input.complexity;
     let message = input.message;
-    let test_value = 844;
-    let seed_value = to_seed_value(test_value);
-    let hash_code = get_hash_code(seed_value, message).to_uppercase();
-    hash_code
+    let mut comp: u64 = 1;
+    let mut is_seed_found = false;
+    let mut hash_code: String = String::from("");
+    while is_seed_found != true {
+        let seed_value = to_seed_value(comp);
+        hash_code = get_hash_code(seed_value, &message).to_uppercase();
+        is_seed_found = check_seed(hash_code.clone(), complexity);
+        comp += 1;
+    }
+   hash_code
 
 }
-fn check_seed(hash_code: &String, complexity: &u32) -> bool {
-    let package = complexity / 4;
-    let floating_beat = complexity % 4;
+fn check_seed(hash_code: String, complexity: u32) -> bool {
+    let mut comp = 0;
+    let bin  = convert_to_binary_from_hex(&*hash_code);
+    for c in bin.chars(){
+        if c == '0' {
+            comp += 1;
+        }
+        else {
+            break;
+        }
+    }
+    let result = if complexity <= comp { true } else { false };
+    result
 }
 
 fn to_seed_value(number: u64) -> String {
@@ -34,7 +51,7 @@ fn to_seed_value(number: u64) -> String {
 }
 
 
-fn get_hash_code( seed: String, message: String) -> String {
+fn get_hash_code(seed: String, message: &String) -> String {
     let mut seed_value = seed.to_owned();
     let message_value = message.to_owned();
     seed_value.push_str(&message_value);
@@ -68,7 +85,6 @@ pub struct MD5HashCashOutput {
 }*/
 fn hex_to_decimal(val: String) -> u64  {
     let z = u64::from_str_radix(&*val, 16).expect("Not a binary hex!");
-    println!("{:?}", z);
     z
 }
 
@@ -103,3 +119,28 @@ fn binary_to_hex(val: String, len: usize) -> String {
     format!("{:01$x}", n, len * 2)
 }
 
+fn convert_to_binary_from_hex(hex: &str) -> String {
+    hex[0..].chars().map(to_binary).collect()
+}
+
+fn to_binary(c: char) -> &'static str {
+    match c {
+        '0' => "0000",
+        '1' => "0001",
+        '2' => "0010",
+        '3' => "0011",
+        '4' => "0100",
+        '5' => "0101",
+        '6' => "0110",
+        '7' => "0111",
+        '8' => "1000",
+        '9' => "1001",
+        'A' => "1010",
+        'B' => "1011",
+        'C' => "1100",
+        'D' => "1101",
+        'E' => "1110",
+        'F' => "1111",
+        _ => "",
+    }
+}
