@@ -12,3 +12,4 @@ pub struct MD5HashCashOutput {
     // hashcode found using seed + message
     pub(crate) hashcode: String,
 }
+
